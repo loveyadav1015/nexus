@@ -1,8 +1,8 @@
-# Mini Slack (Rapid Relay)
+# Nexus
 
 A real-time team messaging application — channels, direct messages, threaded replies, emoji reactions, typing indicators, and full-text search — built with React, Express, PostgreSQL, and Socket.io, secured with JWT-based authentication.
 
-> A self-hosted, lightweight "Mini Slack" clone built as a full-stack, spec-driven project across three phases: Database → Backend → Frontend.
+> A self-hosted, lightweight real-time team messaging platform built as a full-stack, spec-driven project across three phases: Database → Backend → Frontend.
 
 ---
 
@@ -154,8 +154,8 @@ The socket handshake is authenticated via `auth: { token }`, verified server-sid
 1. **Clone the repository**
 
    ```bash
-   git clone <your-repo-url> rapid-relay
-   cd rapid-relay
+   git clone <your-repo-url> nexus
+   cd nexus
    ```
 
 2. **Set up the database**
@@ -174,7 +174,7 @@ The socket handshake is authenticated via `auth: { token }`, verified server-sid
    PORT=5000
    DB_USER=your_db_user
    DB_HOST=localhost
-   DB_NAME=rapid_relay
+   DB_NAME=nexus
    DB_PASSWORD=your_db_password
    DB_PORT=5432
    JWT_SECRET=your_jwt_secret
@@ -229,7 +229,7 @@ No `.env` file is required by default — `vite.config.js` proxies `/api` and `/
 ## Project Structure
 
 ```
-/rapid-relay
+/nexus
 ├── /backend
 │   ├── /src
 │   │   ├── /config        # DB connection, Socket.io init, env vars
