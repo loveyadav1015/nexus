@@ -1,9 +1,10 @@
+name: nexus
 version: '3.8'
 
 services:
   db:
     image: postgres:15-alpine
-    container_name: rapid_relay_db
+    container_name: nexus_db
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -16,7 +17,7 @@ services:
       # (Note: this only runs if the data volume is empty)
       - ./backend/migrations:/docker-entrypoint-initdb.d
     networks:
-      - rapid_relay_network
+      - nexus_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
@@ -26,7 +27,7 @@ services:
   backend:
     build:
       context: ./backend
-    container_name: rapid_relay_backend
+    container_name: nexus_backend
     depends_on:
       db:
         condition: service_healthy
@@ -39,21 +40,21 @@ services:
     ports:
       - "${PORT:-5000}:5000"
     networks:
-      - rapid_relay_network
+      - nexus_network
 
   frontend:
     build:
       context: ./frontend
-    container_name: rapid_relay_frontend
+    container_name: nexus_frontend
     depends_on:
       - backend
     ports:
       - "5173:80"
     networks:
-      - rapid_relay_network
+      - nexus_network
 
 networks:
-  rapid_relay_network:
+  nexus_network:
     driver: bridge
 
 volumes:
