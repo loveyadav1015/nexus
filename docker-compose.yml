@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: rapid_relay_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Mount the migrations directory so they run automatically on first boot
+      # (Note: this only runs if the data volume is empty)
+      - ./backend/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - rapid_relay_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: rapid_relay_backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Construct DB_URL expected by the backend from individual DB_* variables
+      - DB_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - PORT=${PORT:-5000}
+      - JWT_SECRET=${JWT_SECRET}
+      - CLIENT_URL=${CLIENT_URL}
+    ports:
+      - "${PORT:-5000}:5000"
+    networks:
+      - rapid_relay_network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: rapid_relay_frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    networks:
+      - rapid_relay_network
+
+networks:
+  rapid_relay_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
