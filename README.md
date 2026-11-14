@@ -4,37 +4,20 @@ A real-time team messaging application — channels, direct messages, threaded r
 
 > A self-hosted, lightweight real-time team messaging platform built as a full-stack, spec-driven project across three phases: Database → Backend → Frontend.
 
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Database Schema](#database-schema)
-- [API Reference](#api-reference)
-- [Socket.io Events](#socketio-events)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Project Structure](#project-structure)
-- [Known Limitations & Tradeoffs](#known-limitations--tradeoffs)
-- [Roadmap](#roadmap)
-
----
 
 ## Features
 
-- 🔐 JWT-based authentication (register/login) with bcryptjs password hashing
-- 💬 Real-time messaging — instant delivery via WebSockets (Socket.io)
-- 📢 Public channels for team collaboration + private 1-on-1 direct messages
-- 🧵 Threaded replies (single-level, like Slack)
-- 😀 Emoji reactions on messages
-- 🔍 Fast, real-time message search with keyword highlighting (Postgres `pg_trgm` + GIN index)
-- ⌨️ Typing indicators — see when others are typing, in real time
-- ✅ Unread message badges, tracked per user per channel
-- 👤 Rich user profiles — customizable avatar, display name, bio, and online/away/offline status
-- ✏️ Message editing with an "(edited)" indicator
-- 🗑️ Soft-deletable messages (own messages only)
+-  JWT-based authentication (register/login) with bcryptjs password hashing
+-  Real-time messaging — instant delivery via WebSockets (Socket.io)
+-  Public channels for team collaboration + private 1-on-1 direct messages
+-  Threaded replies (single-level, like Slack)
+-  Emoji reactions on messages
+-  Fast, real-time message search with keyword highlighting (Postgres `pg_trgm` + GIN index)
+-  Typing indicators — see when others are typing, in real time
+-  Unread message badges, tracked per user per channel
+-  Rich user profiles — customizable avatar, display name, bio, and online/away/offline status
+-  Message editing with an "(edited)" indicator
+-  Soft-deletable messages (own messages only)
 
 ---
 
