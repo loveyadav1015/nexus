@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+  background-color: #1a1d21;
+  color: #d1d2d3;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #383a40;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: #4a4b50; }
+
+/* Message hover toolbar — hide by default, show on group hover */
+.message-group .message-toolbar {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+.message-group:hover .message-toolbar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Typing indicator dots */
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+.typing-dot:nth-child(1) { animation: typingBounce 1s ease infinite; }
+.typing-dot:nth-child(2) { animation: typingBounce 1s ease 0.15s infinite; }
+.typing-dot:nth-child(3) { animation: typingBounce 1s ease 0.30s infinite; }
+
+/* Emoji picker positioning fix */
+em-emoji-picker {
+  --background-rgb: 34, 37, 41;
+  --border-color: #383a40;
+  --category-icon-active-color: #4a9eed;
+  height: 350px;
+}
