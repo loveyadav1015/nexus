@@ -1,0 +1,24 @@
+{
+  "name": "mini-slack-backend",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "migrate": "node migrations/run.js"
+  },
+  "dependencies": {
+    "bcryptjs": "latest",
+    "cors": "^2.8.6",
+    "dotenv": "latest",
+    "express": "latest",
+    "jsonwebtoken": "latest",
+    "morgan": "^1.11.0",
+    "pg": "latest",
+    "socket.io": "latest",
+    "uuid": "latest"
+  },
+  "devDependencies": {
+    "nodemon": "latest"
+  }
+}
