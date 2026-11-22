@@ -30,51 +30,58 @@ const CreateChannelModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Create a channel">
-      <div className="px-6 pb-4">
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-300 mb-1">Channel name</label>
-          <div className="flex items-center bg-[#2c2d30] border border-[#383a40] rounded-lg overflow-hidden focus-within:border-[#4a9eed]">
-            <span className="px-3 text-gray-400 font-medium text-sm border-r border-[#383a40] h-full flex items-center bg-[#2c2d30] select-none">
+    <Modal isOpen={isOpen} onClose={onClose} title="Create channel">
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="channel-name-input" className="block text-xs font-medium text-ink-secondary mb-1">
+            Channel name
+          </label>
+          <div className="flex items-center bg-input border border-border-strong rounded-lg overflow-hidden focus-within:border-accent focus-within:ring-1 focus-within:ring-accent transition-colors">
+            <span className="px-3 text-ink-faint font-mono text-sm border-r border-border-subtle bg-surface select-none">
               #
             </span>
             <input
               id="channel-name-input"
               type="text"
-              placeholder="e.g. budget-planning"
+              placeholder="e.g. engineering"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="flex-1 bg-transparent px-3 py-2.5 text-sm text-white placeholder-gray-500 outline-none"
+              className="flex-1 bg-transparent px-3 py-2 text-sm text-ink-primary placeholder:text-ink-faint outline-none"
             />
           </div>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-300 mb-1">Description (optional)</label>
+        <div>
+          <label htmlFor="channel-description-input" className="block text-xs font-medium text-ink-secondary mb-1">
+            Topic or description (optional)
+          </label>
           <textarea
             id="channel-description-input"
-            placeholder="What's this channel about?"
+            placeholder="What should people use this channel for?"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-[#2c2d30] border border-[#383a40] rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 resize-none h-32 outline-none focus:border-[#4a9eed]"
+            rows={3}
+            className="w-full bg-input border border-border-strong rounded-lg px-3 py-2 text-sm text-ink-primary placeholder:text-ink-faint resize-none outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
           />
         </div>
-      </div>
 
-      <div className="px-6 pb-6 pt-4 border-t border-[#383a40] flex justify-end gap-3">
-        <button
-          onClick={onClose}
-          className="bg-transparent border border-[#383a40] text-gray-300 hover:bg-[#27292d] px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleCreate}
-          disabled={loading || !name.trim()}
-          className="bg-[#4a55c8] hover:bg-[#5561d4] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Creating...' : 'Create'}
-        </button>
+        <div className="pt-2 flex justify-end gap-2 border-t border-border-subtle">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3.5 py-1.5 rounded-lg border border-border-strong text-ink-secondary hover:text-ink-primary hover:bg-surface-hover text-xs font-medium transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleCreate}
+            disabled={!name.trim() || loading}
+            className="px-4 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-xs font-semibold disabled:opacity-40 transition-colors shadow-xs"
+          >
+            {loading ? 'Creating...' : 'Create channel'}
+          </button>
+        </div>
       </div>
     </Modal>
   );

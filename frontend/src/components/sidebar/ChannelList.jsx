@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Hash } from 'lucide-react';
 import useChannelStore from '../../store/channelStore';
 import useMessageStore from '../../store/messageStore';
 import useDMStore from '../../store/dmStore';
@@ -43,44 +43,57 @@ const ChannelList = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between px-3 mt-4 mb-1">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+      <div className="flex items-center justify-between px-2 mb-1.5">
+        <span className="text-xs font-semibold text-ink-secondary">
           Channels
         </span>
         <button
+          type="button"
           onClick={() => setShowModal(true)}
-          className="text-gray-400 hover:text-white cursor-pointer w-4 h-4 flex items-center justify-center"
+          className="text-ink-faint hover:text-ink-primary p-0.5 rounded hover:bg-surface-hover transition-colors"
           aria-label="Create channel"
+          title="Create channel"
         >
           <Plus size={14} />
         </button>
       </div>
 
-      {channels.map((channel) => {
-        const isActive = channel.id === activeChannelId;
-        const unread = unreadCounts[channel.id] || 0;
-        return (
-          <div
-            key={channel.id}
-            onClick={() => handleSelectChannel(channel.id)}
-            className={`flex items-center gap-2 px-3 py-1 mx-2 rounded text-sm cursor-pointer transition-colors ${
-              isActive
-                ? 'bg-[#1164a3] text-white'
-                : 'text-gray-300 hover:bg-[#27292d]'
-            }`}
-          >
-            <span className="text-gray-400">#</span>
-            <span className="flex-1 truncate">{channel.name}</span>
-            {unread > 0 && !isActive && (
-              <span className="ml-auto bg-white text-[#19171d] text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                {unread}
-              </span>
-            )}
-          </div>
-        );
-      })}
+      <nav aria-label="Channels" className="space-y-0.5">
+        {channels.map((channel) => {
+          const isActive = channel.id === activeChannelId;
+          const unread = unreadCounts[channel.id] || 0;
+          return (
+            <button
+              key={channel.id}
+              type="button"
+              onClick={() => handleSelectChannel(channel.id)}
+              className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition-colors ${
+                isActive
+                  ? 'bg-surface text-accent font-semibold shadow-xs border border-border-strong'
+                  : unread > 0
+                  ? 'text-ink-primary font-semibold hover:bg-surface-hover'
+                  : 'text-ink-secondary hover:text-ink-primary hover:bg-surface-hover'
+              }`}
+            >
+              <Hash size={13} className={isActive ? 'text-accent' : 'text-ink-faint'} />
+              <span className="flex-1 truncate">{channel.name}</span>
+              {unread > 0 && !isActive && (
+                <span
+                  aria-label={`${unread} unread messages`}
+                  className="bg-badge-bg border border-badge-border text-badge-text text-[10px] font-mono font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1"
+                >
+                  {unread}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
 
-      <CreateChannelModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      <CreateChannelModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+      />
     </div>
   );
 };

@@ -31,45 +31,56 @@ const DMList = () => {
     }
   };
 
-  const statusColors = {
-    online: 'bg-[#2bac76]',
-    away: 'bg-[#e8a723]',
-    offline: 'bg-[#6b7280]',
+  const statusConfig = {
+    online: { dot: 'bg-status-online', text: 'Online' },
+    away: { dot: 'bg-status-away', text: 'Away' },
+    offline: { dot: 'bg-status-offline', text: 'Offline' }
   };
 
   return (
     <div>
-      <div className="flex items-center justify-between px-3 mt-4 mb-1">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+      <div className="flex items-center justify-between px-2 mb-1.5">
+        <span className="text-xs font-semibold text-ink-secondary">
           Direct Messages
         </span>
         <button
+          type="button"
           onClick={() => setShowUserPicker(true)}
-          className="text-gray-400 hover:text-white cursor-pointer w-4 h-4 flex items-center justify-center"
-          aria-label="New direct message"
+          className="text-ink-faint hover:text-ink-primary p-0.5 rounded hover:bg-surface-hover transition-colors"
+          aria-label="Start new direct message"
+          title="New direct message"
         >
           <Plus size={14} />
         </button>
       </div>
 
-      {otherUsers.map((u) => {
-        const status = onlineUsers[u.id] || u.status || 'offline';
-        const isActive = activeConversation?.otherUser?.id === u.id;
-        return (
-          <div
-            key={u.id}
-            onClick={() => handleSelectDM(u)}
-            className={`flex items-center gap-2 px-3 py-1 mx-2 rounded text-sm cursor-pointer transition-colors ${
-              isActive
-                ? 'bg-[#1164a3] text-white'
-                : 'text-gray-300 hover:bg-[#27292d]'
-            }`}
-          >
-            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${statusColors[status]}`} />
-            <span className="truncate">{u.display_name || u.username}</span>
-          </div>
-        );
-      })}
+      <nav aria-label="Direct messages" className="space-y-0.5">
+        {otherUsers.map((u) => {
+          const status = onlineUsers[u.id] || u.status || 'offline';
+          const isActive = activeConversation?.otherUser?.id === u.id;
+          const config = statusConfig[status] || statusConfig.offline;
+
+          return (
+            <button
+              key={u.id}
+              type="button"
+              onClick={() => handleSelectDM(u)}
+              className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition-colors ${
+                isActive
+                  ? 'bg-surface text-accent font-semibold shadow-xs border border-border-strong'
+                  : 'text-ink-secondary hover:text-ink-primary hover:bg-surface-hover'
+              }`}
+            >
+              <span
+                aria-label={`Status: ${config.text}`}
+                title={`Status: ${config.text}`}
+                className={`w-2 h-2 rounded-full flex-shrink-0 ${config.dot}`}
+              />
+              <span className="truncate">{u.display_name || u.username}</span>
+            </button>
+          );
+        })}
+      </nav>
 
       <UserPickerModal
         isOpen={showUserPicker}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import useUserStore from '../../store/userStore';
 import useAuthStore from '../../store/authStore';
@@ -15,6 +15,16 @@ const UserPickerModal = ({ isOpen, onClose }) => {
   const setActiveChannel = useChannelStore((s) => s.setActiveChannel);
   const setActiveConversation = useDMStore((s) => s.setActiveConversation);
   const clearActiveThread = useMessageStore((s) => s.clearActiveThread);
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -37,45 +47,61 @@ const UserPickerModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-150"
+      onClick={onClose}
+    >
       <div
-        className="bg-[#222529] rounded-xl w-[400px] shadow-2xl border border-[#383a40] max-h-[480px] overflow-hidden flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Direct message picker"
+        className="bg-surface border border-border-strong rounded-xl w-full max-w-sm shadow-xl max-h-[460px] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-[#383a40]">
-          <Search size={16} className="text-gray-400 flex-shrink-0" />
+        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-border-subtle bg-sidebar/50">
+          <Search size={15} className="text-ink-faint flex-shrink-0" />
           <input
             type="text"
-            placeholder="Search users..."
+            placeholder="Search team members..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-transparent text-white text-sm outline-none placeholder-gray-500"
+            autoFocus
+            className="flex-1 bg-transparent text-ink-primary text-xs outline-none placeholder:text-ink-faint"
           />
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-white"
-            aria-label="Close"
+            className="text-ink-faint hover:text-ink-primary p-1 rounded-md hover:bg-surface-hover transition-colors"
+            aria-label="Close user picker"
           >
-            <X size={16} />
+            <X size={15} />
           </button>
         </div>
 
-        <div className="overflow-y-auto flex-1">
-          {filteredUsers.map((u) => (
-            <div
-              key={u.id}
-              onClick={() => handleSelectUser(u)}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-[#27292d] cursor-pointer transition-colors"
-            >
-              <UserAvatar user={u} size="md" showStatus />
-              <div>
-                <p className="text-sm font-medium text-white">{u.display_name || u.username}</p>
-                <p className="text-xs text-gray-400">@{u.username}</p>
-              </div>
+        <div className="overflow-y-auto flex-1 divide-y divide-border-subtle">
+          {filteredUsers.length === 0 ? (
+            <div className="p-6 text-center text-xs text-ink-muted">
+              No matching teammates found.
             </div>
-          ))}
-          {filteredUsers.length === 0 && (
-            <p className="px-4 py-8 text-center text-sm text-gray-500">No users found</p>
+          ) : (
+            filteredUsers.map((u) => (
+              <button
+                key={u.id}
+                type="button"
+                onClick={() => handleSelectUser(u)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-surface-hover text-left transition-colors"
+              >
+                <UserAvatar user={u} size="md" showStatus />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-ink-primary truncate">
+                    {u.display_name || u.username}
+                  </p>
+                  <p className="text-[11px] text-ink-faint font-mono truncate">
+                    @{u.username}
+                  </p>
+                </div>
+              </button>
+            ))
           )}
         </div>
       </div>

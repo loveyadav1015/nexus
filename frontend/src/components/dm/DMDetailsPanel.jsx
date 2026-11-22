@@ -1,76 +1,84 @@
-import { X, FileText } from 'lucide-react';
+import { X, Calendar, AtSign, AlignLeft } from 'lucide-react';
 import UserAvatar from '../ui/UserAvatar';
 import { format } from 'date-fns';
 
 const DMDetailsPanel = ({ user, onClose }) => {
   if (!user) return null;
 
-  const statusColors = { online: 'bg-[#2bac76]', away: 'bg-[#e8a723]', offline: 'bg-[#6b7280]' };
-  const statusLabels = { online: 'Active', away: 'Away', offline: 'Offline' };
+  const statusConfig = {
+    online: { dot: 'bg-status-online', text: 'Active now' },
+    away: { dot: 'bg-status-away', text: 'Away' },
+    offline: { dot: 'bg-status-offline', text: 'Offline' }
+  };
   const status = user.status || 'offline';
-
-  const placeholderFiles = [
-    { name: 'ProjectPlan_v2.pdf', type: 'Recent documents' },
-    { name: 'DesignSpecs.fig', type: 'Recent documents' },
-    { name: 'MeetingNotes.pdf', type: 'Recent documents' },
-  ];
+  const config = statusConfig[status] || statusConfig.offline;
 
   return (
-    <div className="w-72 border-l border-[#383a40] bg-[#1d1c1d] flex flex-col h-full flex-shrink-0">
-      <div className="h-14 border-b border-[#383a40] px-4 flex items-center justify-between flex-shrink-0">
-        <span className="font-semibold text-white text-lg">Details</span>
+    <aside
+      aria-label="Teammate profile details"
+      className="w-dm-details border-l border-border-subtle bg-surface flex flex-col h-full flex-shrink-0 animate-in slide-in-from-right-4 duration-150"
+    >
+      <div className="h-header border-b border-border-subtle px-4 flex items-center justify-between flex-shrink-0">
+        <span className="font-semibold text-ink-primary text-xs tracking-tight">Profile Details</span>
         {onClose && (
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-1 rounded hover:bg-[#27292d] transition-colors"
-            aria-label="Close details"
+            className="text-ink-faint hover:text-ink-primary p-1 rounded-md hover:bg-surface-hover transition-colors"
+            aria-label="Close details panel"
           >
-            <X size={18} />
+            <X size={15} />
           </button>
         )}
       </div>
 
-      <div className="p-4 flex flex-col items-center gap-2 text-center">
+      <div className="p-5 flex flex-col items-center gap-2 border-b border-border-subtle bg-canvas/40 text-center">
         <UserAvatar user={user} size="lg" showStatus />
-        <h3 className="text-lg font-semibold text-white">{user.display_name || user.username}</h3>
+        <h3 className="text-sm font-semibold text-ink-primary tracking-tight mt-1">
+          {user.display_name || user.username}
+        </h3>
         <div className="flex items-center gap-1.5">
-          <span className={`w-2 h-2 rounded-full ${statusColors[status]}`} />
-          <span className="text-sm text-gray-400">{statusLabels[status]}</span>
+          <span className={`w-2 h-2 rounded-full ${config.dot}`} />
+          <span className="text-xs text-ink-muted">{config.text}</span>
         </div>
-        {user.bio && <p className="text-sm text-gray-400 mt-1">{user.bio}</p>}
       </div>
 
-      <div className="px-4 py-3 border-t border-[#383a40]">
-        <div className="mb-3">
-          <span className="text-xs font-semibold uppercase text-gray-500 tracking-wider mb-0.5 block">Username</span>
-          <span className="text-sm text-gray-200">@{user.username}</span>
+      <div className="p-4 space-y-4 overflow-y-auto flex-1">
+        <div>
+          <span className="text-[10px] font-mono text-ink-faint uppercase tracking-wider block mb-1">
+            Username
+          </span>
+          <div className="flex items-center gap-1.5 text-xs text-ink-primary font-mono">
+            <AtSign size={13} className="text-ink-faint" />
+            <span>{user.username}</span>
+          </div>
         </div>
+
+        {user.bio && (
+          <div>
+            <span className="text-[10px] font-mono text-ink-faint uppercase tracking-wider block mb-1">
+              About
+            </span>
+            <div className="flex items-start gap-1.5 text-xs text-ink-secondary leading-relaxed">
+              <AlignLeft size={13} className="text-ink-faint mt-0.5 shrink-0" />
+              <span>{user.bio}</span>
+            </div>
+          </div>
+        )}
+
         {user.created_at && (
-          <div className="mb-3">
-            <span className="text-xs font-semibold uppercase text-gray-500 tracking-wider mb-0.5 block">Member Since</span>
-            <span className="text-sm text-gray-200">{format(new Date(user.created_at), 'MMM d, yyyy')}</span>
+          <div>
+            <span className="text-[10px] font-mono text-ink-faint uppercase tracking-wider block mb-1">
+              Joined Team
+            </span>
+            <div className="flex items-center gap-1.5 text-xs text-ink-secondary">
+              <Calendar size={13} className="text-ink-faint" />
+              <span>{format(new Date(user.created_at), 'MMMM d, yyyy')}</span>
+            </div>
           </div>
         )}
       </div>
-
-      <div className="px-4 py-3 border-t border-[#383a40]">
-        <span className="text-xs font-semibold uppercase text-gray-500 tracking-wider mb-2 block">Shared Files</span>
-        {placeholderFiles.map((file, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-3 py-2 hover:bg-[#27292d] rounded px-2 cursor-pointer transition-colors"
-          >
-            <div className="w-8 h-8 bg-[#e8502a]/10 rounded flex items-center justify-center flex-shrink-0">
-              <FileText size={16} className="text-[#e8502a]" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm text-gray-200 font-medium truncate">{file.name}</p>
-              <p className="text-xs text-gray-500">{file.type}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    </aside>
   );
 };
 
