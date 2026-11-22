@@ -158,3 +158,18 @@ When introducing features or resolving issues in Nexus:
    - Use ES modules throughout backend and frontend (`import`/`export`).
    - Use standard HTTP status codes (`200 OK`, `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `500 Internal Server Error`).
    - Log actionable error messages in backend controllers without leaking raw database stack traces to the client.
+
+---
+
+## 7. Voice Assistant & Tool Pipeline
+
+Nexus includes an integrated voice assistant and dictation capability:
+- **Speech-to-Text (STT):** Dictation via browser Web Speech API (`useSpeechToText`), with fallback to `MediaRecorder` + `POST /api/voice/transcribe`.
+- **Text-to-Speech (TTS):** Spoken replies via `window.speechSynthesis` (`useTextToSpeech`) with local mute toggle.
+- **Claude Assistant:** `POST /api/voice/command` executes tool calling with Anthropic Claude (`VOICE_MODEL`, default `claude-haiku-5-5`).
+  - Read tools: `search_messages`, `summarize_channel`, `get_unread_summary`.
+  - Navigation tools: `open_channel`, `open_dm` (returns UI actions).
+  - Write tools: `send_message` creates an in-memory pending action (2-minute TTL). Writes must be confirmed via `POST /api/voice/confirm`.
+  - Rate limiting: 20 req/min/user via `express-rate-limit`.
+  - Tool audit logging: Every execution logged in `assistant_logs` table (never log raw audio).
+  - Safety: Message contents from tools are treated strictly as untrusted data. No delete tool exists. User permissions are strictly enforced with JWT `req.user.id`.

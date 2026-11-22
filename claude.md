@@ -85,6 +85,12 @@ Read the `artifacts/` files on demand rather than loading them for every task.
 - Reuse primitives from `components/ui/` before creating new ones.
 - Keep Tailwind v3 syntax, and do not use v4-only features.
 
+### Voice Assistant & Tool Extensions
+- Voice tools reside in `backend/src/services/voiceTools.js` and `assistant.service.js`.
+- Always enforce verified JWT authorization (`user.id`) and membership checks.
+- Any write operations must require explicit confirmation and never write immediately.
+- Never log raw audio; only log tool name and sanitized arguments in `assistant_logs`.
+
 ---
 
 ## Things to avoid

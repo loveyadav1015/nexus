@@ -12,6 +12,13 @@ const UserProfileModal = ({ isOpen, onClose }) => {
   const [bio, setBio] = useState(user?.bio || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
   const [status, setStatus] = useState(user?.status || 'online');
+  const [voiceOptIn, setVoiceOptIn] = useState(() => {
+    try {
+      return localStorage.getItem('nexus_voice_opt_in') !== 'false';
+    } catch {
+      return true;
+    }
+  });
   const [loading, setLoading] = useState(false);
 
   const previewUser = {
@@ -30,6 +37,11 @@ const UserProfileModal = ({ isOpen, onClose }) => {
         avatar_url: avatarUrl || null,
       });
       await updateStatus(user.id, status);
+      try {
+        localStorage.setItem('nexus_voice_opt_in', String(voiceOptIn));
+      } catch {
+        // ignore
+      }
       updateUserStore({ ...res.data.user, status });
       toast.success('Profile updated!');
       onClose();
@@ -89,6 +101,26 @@ const UserProfileModal = ({ isOpen, onClose }) => {
             <option value="away">🟡 Away</option>
             <option value="offline">⚫ Offline</option>
           </select>
+        </div>
+
+        <div className="mb-2 pt-2 border-t border-[#383a40]/60">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm font-medium text-gray-200 block">Voice Assistant</span>
+              <span className="text-xs text-gray-400 block max-w-[280px]">
+                Enables voice dictation and Claude-powered AI actions. Voice transcripts and commands are processed by third-party services.
+              </span>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={voiceOptIn}
+                onChange={(e) => setVoiceOptIn(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-10 h-5 bg-[#383a40] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#4a55c8]"></div>
+            </label>
+          </div>
         </div>
       </div>
 

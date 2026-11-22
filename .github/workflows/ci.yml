@@ -35,6 +35,11 @@ jobs:
         run: |
           find src migrations -name "*.js" -exec node --check {} +
 
+      - name: Run backend tests
+        env:
+          JWT_SECRET: ci_test_jwt_secret
+        run: npm test
+
   frontend:
     name: Frontend (Lint & Build)
     runs-on: ubuntu-latest

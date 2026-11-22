@@ -18,6 +18,7 @@ A real-time team messaging application — channels, direct messages, threaded r
 -  Rich user profiles — customizable avatar, display name, bio, and online/away/offline status
 -  Message editing with an "(edited)" indicator
 -  Soft-deletable messages (own messages only)
+-  Voice dictation & Voice Assistant — dictate messages into chat with live interim feedback, or command an AI assistant (powered by Anthropic Claude with tool use) to search messages, summarize channels, check unread counts, navigate between channels/DMs, and stage messages with human confirmation; includes push-to-talk (`Ctrl+Shift+V`) and optional spoken audio replies via Text-to-Speech (TTS).
 
 ---
 
@@ -102,6 +103,9 @@ All authenticated routes require an `Authorization: Bearer <token>` header.
 | GET | `/api/search?q=` | Search messages | Yes |
 | GET | `/api/dms` | List DM conversations | Yes |
 | GET | `/api/dms/:id/messages` | Get messages in a DM conversation | Yes |
+| POST | `/api/voice/command` | Send voice assistant transcript & context | Yes |
+| POST | `/api/voice/confirm` | Confirm or cancel pending write action | Yes |
+| POST | `/api/voice/transcribe` | Fallback cloud STT audio transcription | Yes |
 
 ---
 
@@ -202,6 +206,10 @@ The socket handshake is authenticated via `auth: { token }`, verified server-sid
 | `DB_PORT` | PostgreSQL port (default `5432`) |
 | `JWT_SECRET` | Secret used to sign JWTs |
 | `CLIENT_URL` | Frontend origin, for CORS |
+| `ANTHROPIC_API_KEY` | Anthropic API key for Voice Assistant tool execution |
+| `VOICE_MODEL` | Claude model for assistant (default `claude-haiku-5-5`) |
+| `STT_PROVIDER` | Optional cloud speech-to-text fallback provider (e.g. `openai`, `groq`) |
+| `STT_API_KEY` | API key for cloud STT provider |
 
 **Frontend**
 
@@ -251,6 +259,7 @@ No `.env` file is required by default — `vite.config.js` proxies `/api` and `/
 
 ## Roadmap
 
+- [x] Voice Assistant (dictation, tool use, push-to-talk, spoken replies, confirmation loop)
 - [ ] Message reaction removal
 - [ ] File/image attachments
 - [ ] Multi-instance Socket.io scaling via Redis adapter
