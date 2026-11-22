@@ -3,12 +3,37 @@ import { Smile, Send } from 'lucide-react';
 import { sendMessage } from '../../api/messages';
 import { getSocket } from '../../services/socket';
 import EmojiPicker from 'emoji-picker-react';
+import useSpeechToText from '../../hooks/useSpeechToText';
+import MicButton from './MicButton';
 
 const MessageInput = ({ channelId, channelName, parentId = null, placeholder: customPlaceholder }) => {
   const [content, setContent] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const typingTimeoutRef = useRef(null);
   const isTypingRef = useRef(false);
+  const baseContentRef = useRef('');
+
+  // Speech to text integration
+  const { supported, listening, error: sttError, start: startListening, stop: stopListening } = useSpeechToText({
+    lang: 'en-IN',
+    continuous: true,
+    interimResults: true,
+    onTranscript: (spokenText) => {
+      // Append or insert transcript after the base content that existed before dictation started
+      const base = baseContentRef.current;
+      const separator = base && !base.endsWith(' ') ? ' ' : '';
+      setContent(base ? `${base}${separator}${spokenText}` : spokenText);
+    }
+  });
+
+  const handleToggleMic = () => {
+    if (listening) {
+      stopListening();
+    } else {
+      baseContentRef.current = content;
+      startListening();
+    }
+  };
 
   const placeholderText = customPlaceholder || `Message #${channelName || ''}`;
 
@@ -40,9 +65,13 @@ const MessageInput = ({ channelId, channelName, parentId = null, placeholder: cu
 
   const handleSend = async () => {
     if (!content.trim()) return;
+    if (listening) {
+      stopListening();
+    }
     try {
       await sendMessage(channelId, content.trim(), parentId);
       setContent('');
+      baseContentRef.current = '';
       emitTypingStop();
     } catch (err) {
       console.error('Failed to send message:', err);
@@ -75,20 +104,30 @@ const MessageInput = ({ channelId, channelName, parentId = null, placeholder: cu
         />
         <div className="border-t border-[#383a40]/50 px-2 py-1.5 flex items-center justify-between">
           <button
+            type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             className="text-gray-400 hover:text-gray-200 p-1 rounded hover:bg-[#383a40] transition-colors"
             aria-label="Emoji picker"
           >
             <Smile size={18} />
           </button>
-          <button
-            onClick={handleSend}
-            disabled={!content.trim()}
-            className="bg-[#4a55c8] hover:bg-[#5561d4] text-white rounded p-1.5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            aria-label="Send message"
-          >
-            <Send size={16} />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <MicButton
+              supported={supported}
+              listening={listening}
+              onToggle={handleToggleMic}
+              error={sttError}
+            />
+            <button
+              type="button"
+              onClick={handleSend}
+              disabled={!content.trim()}
+              className="bg-[#4a55c8] hover:bg-[#5561d4] text-white rounded p-1.5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              aria-label="Send message"
+            >
+              <Send size={16} />
+            </button>
+          </div>
         </div>
       </div>
 
