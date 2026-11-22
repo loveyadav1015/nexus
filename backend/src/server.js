@@ -16,6 +16,7 @@ const reactionsRouter = require('./routes/reactions');
 const usersRouter = require('./routes/users');
 const dmsRouter = require('./routes/dms');
 const searchRouter = require('./routes/search');
+const voiceRouter = require('./routes/voice.routes');
 
 const app = express();
 const httpServer = createServer(app);
@@ -41,6 +42,7 @@ app.use('/api/reactions', reactionsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/dms', dmsRouter);
 app.use('/api/search', searchRouter);
+app.use('/api/voice', voiceRouter);
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));

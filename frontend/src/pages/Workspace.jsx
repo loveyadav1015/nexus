@@ -12,6 +12,7 @@ import Sidebar from '../components/sidebar/Sidebar';
 import ChatArea from '../components/chat/ChatArea';
 import DMArea from '../components/dm/DMArea';
 import WelcomeScreen from '../components/chat/WelcomeScreen';
+import VoiceAssistant from '../components/voice/VoiceAssistant';
 
 const Workspace = () => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -57,6 +58,7 @@ const Workspace = () => {
       ) : (
         <WelcomeScreen />
       )}
+      <VoiceAssistant />
     </div>
   );
 };

@@ -20,6 +20,13 @@ async function runMigrations() {
     await pool.query(seedSql);
     console.log('Seed data inserted.');
 
+    const logsPath = path.join(__dirname, '003_assistant_logs.sql');
+    if (fs.existsSync(logsPath)) {
+      const logsSql = fs.readFileSync(logsPath, 'utf8');
+      await pool.query(logsSql);
+      console.log('Assistant logs schema created.');
+    }
+
   } catch (error) {
     console.error('Migration failed:', error.message);
     process.exit(1);
