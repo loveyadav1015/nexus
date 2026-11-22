@@ -280,28 +280,28 @@ const VoiceAssistant = () => {
               setOpen(false);
             }
           }}
-          aria-label="Voice Assistant"
-          title="Voice Assistant (Ctrl+Shift+V)"
-          className={`h-12 w-12 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 relative border ${
+          aria-label="Nexus Voice Assistant"
+          title="Voice Assistant (Hold Ctrl+Shift+V)"
+          className={`h-11 w-11 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 relative border ${
             listening
-              ? 'bg-red-500 text-white border-red-400 ring-4 ring-red-500/40 animate-pulse scale-105'
+              ? 'bg-status-offline text-white border-status-offline ring-4 ring-status-offline/30 animate-pulse scale-105'
               : status === 'thinking'
-              ? 'bg-[#4a55c8] text-white border-[#5561d4] ring-4 ring-[#4a55c8]/40'
-              : 'bg-[#1e1f22] text-[#6ab0f5] border-[#383a40] hover:border-[#6ab0f5] hover:scale-105'
+              ? 'bg-accent text-white border-accent ring-4 ring-accent/30'
+              : 'bg-surface text-ink-primary border-border-strong hover:border-accent hover:text-accent hover:scale-105'
           }`}
         >
           {status === 'thinking' ? (
-            <Loader2 size={22} className="animate-spin" />
+            <Loader2 size={18} className="animate-spin" />
           ) : listening ? (
-            <MicOff size={22} />
+            <MicOff size={18} />
           ) : (
-            <Sparkles size={22} />
+            <Sparkles size={18} />
           )}
 
           {listening && (
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+            <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-offline opacity-75" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-status-offline" />
             </span>
           )}
         </button>
@@ -312,20 +312,20 @@ const VoiceAssistant = () => {
         <div
           role="dialog"
           aria-label="Nexus Voice Assistant"
-          className="fixed bottom-22 right-6 z-40 w-96 max-w-[calc(100vw-2rem)] rounded-xl bg-[#1e1f22] border border-[#383a40] shadow-2xl overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-200"
+          className="fixed bottom-20 right-6 z-40 w-96 max-w-[calc(100vw-2rem)] rounded-xl bg-surface border border-border-strong shadow-2xl overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-200"
         >
           {/* Header */}
-          <div className="px-4 py-3 bg-[#2b2d31] border-b border-[#383a40] flex items-center justify-between">
+          <div className="px-4 py-3 bg-sidebar/50 border-b border-border-subtle flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="p-1 rounded-md bg-[#4a55c8]/20 text-[#6ab0f5]">
-                <Sparkles size={16} />
+              <div className="p-1 rounded-md bg-accent/15 text-accent">
+                <Sparkles size={15} />
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-white tracking-wide">
+                <h3 className="text-xs font-semibold text-ink-primary tracking-tight">
                   Nexus Assistant
                 </h3>
-                <p className="text-[10px] text-gray-400">
-                  Hold <kbd className="px-1 py-0.5 rounded bg-[#1e1f22] border border-[#383a40] text-[9px] text-gray-300">Ctrl+Shift+V</kbd> to talk
+                <p className="text-[10px] text-ink-faint">
+                  Hold <kbd className="px-1 py-0.5 rounded bg-canvas border border-border-strong text-[9px] font-mono text-ink-secondary">Ctrl+Shift+V</kbd> to talk
                 </p>
               </div>
             </div>
@@ -335,7 +335,7 @@ const VoiceAssistant = () => {
                 type="button"
                 onClick={toggleMute}
                 title={isMuted ? 'Unmute spoken replies' : 'Mute spoken replies'}
-                className="p-1.5 rounded text-gray-400 hover:text-gray-200 hover:bg-[#383a40] transition-colors"
+                className="p-1.5 rounded-md text-ink-secondary hover:text-ink-primary hover:bg-surface-hover transition-colors"
               >
                 {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
               </button>
@@ -346,7 +346,7 @@ const VoiceAssistant = () => {
                   cancelSpeech();
                   setOpen(false);
                 }}
-                className="p-1.5 rounded text-gray-400 hover:text-gray-200 hover:bg-[#383a40] transition-colors"
+                className="p-1.5 rounded-md text-ink-secondary hover:text-ink-primary hover:bg-surface-hover transition-colors"
               >
                 <X size={15} />
               </button>
@@ -361,15 +361,15 @@ const VoiceAssistant = () => {
                 <span
                   className={`h-2 w-2 rounded-full ${
                     listening
-                      ? 'bg-red-500 animate-ping'
+                      ? 'bg-status-offline animate-ping'
                       : status === 'thinking'
-                      ? 'bg-amber-400 animate-pulse'
+                      ? 'bg-status-away animate-pulse'
                       : status === 'speaking'
-                      ? 'bg-green-400 animate-pulse'
-                      : 'bg-blue-400'
+                      ? 'bg-status-online animate-pulse'
+                      : 'bg-accent'
                   }`}
                 />
-                <span className="text-gray-300 capitalize font-medium text-[11px]">
+                <span className="text-ink-secondary capitalize font-medium text-[11px]">
                   {listening
                     ? 'Listening... (Speak now)'
                     : status === 'thinking'
@@ -386,7 +386,7 @@ const VoiceAssistant = () => {
                 <button
                   type="button"
                   onClick={cancelSpeech}
-                  className="flex items-center gap-1 text-[11px] text-red-400 hover:text-red-300 px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20"
+                  className="flex items-center gap-1 text-[11px] text-status-offline hover:opacity-80 px-2 py-0.5 rounded bg-status-offline/10 border border-status-offline/20"
                 >
                   <Square size={10} />
                   Stop Voice
@@ -396,25 +396,25 @@ const VoiceAssistant = () => {
 
             {/* Error Message */}
             {(error || sttError) && (
-              <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-xs text-red-300">
+              <div className="p-2.5 rounded-lg bg-status-offline/10 border border-status-offline/30 text-xs text-status-offline">
                 {error || sttError}
               </div>
             )}
 
             {/* User Transcript */}
             {lastTranscript && (
-              <div className="p-2.5 rounded-lg bg-[#2b2d31] border border-[#383a40]/60 text-xs text-gray-200">
-                <span className="text-[10px] text-gray-400 block font-semibold uppercase tracking-wider mb-1">
+              <div className="p-3 rounded-lg bg-canvas border border-border-subtle text-xs text-ink-primary">
+                <span className="text-[10px] text-ink-faint block font-semibold uppercase tracking-wider mb-1">
                   You Said
                 </span>
-                <p className="italic text-[#d1d2d3]">"{lastTranscript}"</p>
+                <p className="italic text-ink-secondary">&quot;{lastTranscript}&quot;</p>
               </div>
             )}
 
             {/* Assistant Reply */}
             {reply && (
-              <div className="p-2.5 rounded-lg bg-[#4a55c8]/10 border border-[#4a55c8]/30 text-xs text-gray-100">
-                <span className="text-[10px] text-[#6ab0f5] block font-semibold uppercase tracking-wider mb-1 flex items-center gap-1">
+              <div className="p-3 rounded-lg bg-accent/10 border border-accent/20 text-xs text-ink-primary">
+                <span className="text-[10px] text-accent block font-semibold uppercase tracking-wider mb-1 flex items-center gap-1">
                   <Sparkles size={11} />
                   Assistant
                 </span>
@@ -424,11 +424,11 @@ const VoiceAssistant = () => {
 
             {/* Confirmation Box */}
             {pendingConfirmation && (
-              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs flex flex-col gap-2">
-                <span className="text-[10px] text-amber-300 font-semibold uppercase tracking-wider">
+              <div className="p-3 rounded-lg bg-status-away/10 border border-status-away/30 text-xs flex flex-col gap-2">
+                <span className="text-[10px] text-status-away font-semibold uppercase tracking-wider">
                   Action Requires Confirmation
                 </span>
-                <p className="text-gray-200 font-medium">
+                <p className="text-ink-primary font-medium">
                   {pendingConfirmation.preview}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
@@ -436,7 +436,7 @@ const VoiceAssistant = () => {
                     type="button"
                     onClick={() => handleConfirm(true)}
                     disabled={isConfirmingAction}
-                    className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded bg-green-600 hover:bg-green-700 text-white font-medium transition-colors disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-status-online hover:opacity-90 text-white font-medium transition-colors disabled:opacity-50"
                   >
                     <CheckCircle2 size={13} />
                     Confirm
@@ -445,7 +445,7 @@ const VoiceAssistant = () => {
                     type="button"
                     onClick={() => handleConfirm(false)}
                     disabled={isConfirmingAction}
-                    className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded bg-[#383a40] hover:bg-[#474950] text-gray-200 font-medium transition-colors disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-surface border border-border-strong hover:bg-surface-hover text-ink-primary font-medium transition-colors disabled:opacity-50"
                   >
                     <XCircle size={13} />
                     Cancel
@@ -456,16 +456,16 @@ const VoiceAssistant = () => {
           </div>
 
           {/* Bottom Action Area: Mic button + typed input */}
-          <div className="p-3 bg-[#2b2d31] border-t border-[#383a40]">
-            <form onSubmit={handleTextSubmit} className="flex items-center gap-1.5">
+          <div className="p-3 bg-sidebar/50 border-t border-border-subtle">
+            <form onSubmit={handleTextSubmit} className="flex items-center gap-2">
               {sttSupported && (
                 <button
                   type="button"
                   onClick={listening ? handleStopListening : handleStartListening}
                   className={`p-2 rounded-lg transition-colors flex items-center justify-center ${
                     listening
-                      ? 'bg-red-500 text-white animate-pulse'
-                      : 'bg-[#383a40] text-gray-300 hover:text-white hover:bg-[#474950]'
+                      ? 'bg-status-offline text-white animate-pulse'
+                      : 'bg-surface border border-border-strong text-ink-secondary hover:text-ink-primary hover:bg-surface-hover'
                   }`}
                   title={listening ? 'Stop listening' : 'Start speaking'}
                 >
@@ -478,13 +478,13 @@ const VoiceAssistant = () => {
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Ask or command..."
-                className="flex-1 bg-[#1e1f22] border border-[#383a40] rounded-lg px-3 py-1.5 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-[#4a55c8]"
+                className="flex-1 bg-input border border-border-strong rounded-lg px-3 py-1.5 text-xs text-ink-primary placeholder:text-ink-faint focus:outline-none focus:border-accent"
               />
 
               <button
                 type="submit"
                 disabled={!textInput.trim() || status === 'thinking'}
-                className="p-2 rounded-lg bg-[#4a55c8] hover:bg-[#5561d4] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-lg bg-accent hover:bg-accent-hover text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 title="Send command"
               >
                 <Send size={14} />

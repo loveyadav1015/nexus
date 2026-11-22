@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { searchMessages } from '../../api/search';
 import { format } from 'date-fns';
@@ -11,35 +11,35 @@ const SearchBar = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const setActiveChannel = useChannelStore((s) => s.setActiveChannel);
   const setActiveConversation = useDMStore((s) => s.setActiveConversation);
-
-  const debouncedSearch = useCallback(
-    (() => {
-      let timeout;
-      return (q) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(async () => {
-          if (!q.trim()) {
-            setResults([]);
-            return;
-          }
-          setLoading(true);
-          try {
-            const res = await searchMessages(q);
-            setResults(res.data.results);
-          } catch (err) {
-            console.error('Search failed:', err);
-          } finally {
-            setLoading(false);
-          }
-        }, 400);
-      };
-    })(),
-    []
-  );
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
-    debouncedSearch(query);
-  }, [query, debouncedSearch]);
+    if (!query.trim()) return;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await searchMessages(query);
+        setResults(res.data.results);
+      } catch (err) {
+        console.error('Search failed:', err);
+      } finally {
+        setLoading(false);
+      }
+    }, 400);
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [query]);
+
+  const handleQueryChange = (e) => {
+    const val = e.target.value;
+    setQuery(val);
+    if (!val.trim()) {
+      setResults([]);
+    }
+  };
 
   const highlightMatch = (text, searchQuery) => {
     if (!searchQuery.trim()) return text;
@@ -47,7 +47,7 @@ const SearchBar = ({ onClose }) => {
     const parts = text.split(regex);
     return parts.map((part, i) =>
       regex.test(part) ? (
-        <mark key={i} className="bg-[#4a9eed]/20 text-[#6ab0f5] rounded px-0.5 font-medium">
+        <mark key={i} className="bg-accent/15 text-accent font-medium rounded px-0.5">
           {part}
         </mark>
       ) : (
@@ -63,47 +63,55 @@ const SearchBar = ({ onClose }) => {
   };
 
   return (
-    <div className="absolute top-14 right-0 w-[400px] bg-[#222529] border border-[#383a40] rounded-xl shadow-2xl z-40 max-h-[480px] overflow-hidden flex flex-col">
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-[#383a40]">
-        <Search size={16} className="text-gray-400 flex-shrink-0" />
+    <div
+      role="dialog"
+      aria-label="Search messages"
+      className="absolute top-12 right-4 w-96 max-w-[calc(100vw-2rem)] bg-surface border border-border-strong rounded-xl shadow-2xl z-40 max-h-[460px] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150"
+    >
+      <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border-subtle bg-sidebar/50">
+        <Search size={15} className="text-ink-secondary flex-shrink-0" />
         <input
           type="text"
           placeholder="Search messages..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={handleQueryChange}
           autoFocus
-          className="flex-1 bg-transparent text-white text-sm outline-none placeholder-gray-500"
+          className="flex-1 bg-transparent text-ink-primary text-sm outline-none placeholder:text-ink-faint"
         />
-        <button onClick={onClose} className="text-gray-400 hover:text-white" aria-label="Close search">
-          <X size={16} />
+        <button
+          onClick={onClose}
+          className="text-ink-secondary hover:text-ink-primary p-1 rounded hover:bg-surface-hover transition-colors"
+          aria-label="Close search"
+        >
+          <X size={15} />
         </button>
       </div>
 
       <div className="overflow-y-auto flex-1">
         {loading && (
-          <div className="px-4 py-8 text-center text-sm text-gray-500">Searching...</div>
+          <div className="px-4 py-8 text-center text-xs text-ink-faint">Searching messages...</div>
         )}
         {!loading && results.length === 0 && query.trim() && (
-          <div className="px-4 py-8 text-center text-sm text-gray-500">
-            No results for &quot;{query}&quot;
+          <div className="px-4 py-8 text-center text-xs text-ink-muted">
+            No results found for &quot;{query}&quot;
           </div>
         )}
         {!loading && results.map((result) => (
           <div
             key={result.id}
             onClick={() => handleResultClick(result)}
-            className="px-4 py-3 hover:bg-[#27292d] cursor-pointer border-b border-[#383a40]/50 transition-colors"
+            className="px-4 py-3 hover:bg-sidebar/50 cursor-pointer border-b border-border-subtle/50 transition-colors"
           >
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs bg-[#27292d] border border-[#383a40] text-[#4a9eed] rounded px-2 py-0.5 font-medium">
+              <span className="text-[11px] font-mono bg-canvas border border-border-subtle text-accent rounded px-1.5 py-0.5">
                 #{result.channel_name}
               </span>
-              <span className="text-xs text-gray-400">{result.username}</span>
-              <span className="text-xs text-gray-500 ml-auto">
+              <span className="text-xs font-medium text-ink-primary">{result.username}</span>
+              <span className="text-[11px] font-mono text-ink-faint ml-auto">
                 {format(new Date(result.created_at), 'h:mm a')}
               </span>
             </div>
-            <p className="text-sm text-gray-200 leading-relaxed">
+            <p className="text-xs text-ink-secondary leading-relaxed line-clamp-2">
               {highlightMatch(result.content, query)}
             </p>
           </div>

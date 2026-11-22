@@ -1,7 +1,7 @@
 import useAuthStore from '../../store/authStore';
 import { addReaction, removeReaction } from '../../api/reactions';
 
-const ReactionBar = ({ reactions, messageId, channelId }) => {
+const ReactionBar = ({ reactions, messageId }) => {
   const currentUser = useAuthStore((s) => s.user);
 
   if (!reactions || reactions.length === 0) return null;
@@ -31,20 +31,21 @@ const ReactionBar = ({ reactions, messageId, channelId }) => {
   };
 
   return (
-    <div className="flex flex-wrap gap-1 mt-1">
+    <div className="flex flex-wrap gap-1 mt-1.5">
       {Object.values(grouped).map((r) => (
         <button
           key={r.emoji}
+          type="button"
           onClick={() => handleToggleReaction(r.emoji, r.hasOwn)}
-          className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-sm cursor-pointer transition-colors ${
+          className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs transition-all ${
             r.hasOwn
-              ? 'border border-[#4a9eed] bg-[#4a9eed]/10 hover:bg-[#4a9eed]/20'
-              : 'bg-[#27292d] border border-[#383a40] hover:bg-[#2c2d30]'
+              ? 'border border-accent-border bg-accent-faint text-accent'
+              : 'border border-border-strong bg-surface hover:bg-surface-hover text-ink-primary'
           }`}
           aria-label={`${r.emoji} ${r.count}`}
         >
           <span>{r.emoji}</span>
-          <span className="text-xs text-gray-300">{r.count}</span>
+          <span className="text-[11px] font-mono font-medium">{r.count}</span>
         </button>
       ))}
     </div>

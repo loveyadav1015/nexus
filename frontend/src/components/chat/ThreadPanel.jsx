@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, MessageSquare } from 'lucide-react';
 import useMessageStore from '../../store/messageStore';
 import { getReplies } from '../../api/messages';
 import MessageItem from './MessageItem';
@@ -26,7 +26,7 @@ const ThreadPanel = () => {
       }
     };
     fetchReplies();
-  }, [activeThread?.id, setThreadMessages]);
+  }, [activeThread, setThreadMessages]);
 
   if (!activeThread) return null;
 
@@ -35,62 +35,80 @@ const ThreadPanel = () => {
     username: activeThread.username,
     display_name: activeThread.display_name,
     avatar_url: activeThread.avatar_url,
+    status: activeThread.status
   };
 
   return (
-    <div className="w-80 border-l border-[#383a40] bg-[#1d1c1d] flex flex-col h-full flex-shrink-0">
-      <div className="h-14 border-b border-[#383a40] px-4 flex items-center justify-between flex-shrink-0">
+    <aside
+      aria-label="Discussion thread"
+      className="w-panel border-l border-border-subtle bg-surface flex flex-col h-full flex-shrink-0 animate-in slide-in-from-right-4 duration-150"
+    >
+      {/* Thread Header */}
+      <div className="h-header border-b border-border-subtle px-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-white">Thread</span>
-          <span className="text-sm text-gray-400">{replies.length} {replies.length === 1 ? 'reply' : 'replies'}</span>
+          <MessageSquare size={15} className="text-accent" />
+          <span className="font-semibold text-ink-primary text-xs tracking-tight">Thread</span>
+          <span className="text-[11px] font-mono text-ink-muted">
+            ({replies.length} {replies.length === 1 ? 'reply' : 'replies'})
+          </span>
         </div>
         <button
+          type="button"
           onClick={clearActiveThread}
-          className="text-gray-400 hover:text-white p-1 rounded hover:bg-[#27292d] transition-colors"
-          aria-label="Close thread"
+          className="text-ink-faint hover:text-ink-primary p-1 rounded-md hover:bg-surface-hover transition-colors"
+          aria-label="Close thread panel"
         >
-          <X size={18} />
+          <X size={15} />
         </button>
       </div>
 
-      <div className="px-4 py-3 border-b border-[#383a40] flex-shrink-0">
+      {/* Parent Anchor Message */}
+      <div className="p-4 border-b border-border-subtle bg-canvas/40 flex-shrink-0">
         <div className="flex gap-3">
           <UserAvatar user={parentUser} size="md" />
-          <div>
+          <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2">
-              <span className="font-semibold text-white text-sm">{activeThread.display_name || activeThread.username}</span>
-              <span className="text-[11px] text-gray-500">{format(new Date(activeThread.created_at), 'h:mm a')}</span>
+              <span className="font-semibold text-xs text-ink-primary">
+                {activeThread.display_name || activeThread.username}
+              </span>
+              <span className="text-[10px] font-mono text-ink-faint">
+                {format(new Date(activeThread.created_at), 'HH:mm')}
+              </span>
             </div>
-            <p className="text-sm text-[#d1d2d3] mt-0.5 leading-relaxed">{activeThread.content}</p>
+            <p className="text-xs text-ink-primary mt-1 leading-relaxed whitespace-pre-wrap break-words">
+              {activeThread.content}
+            </p>
           </div>
         </div>
       </div>
 
-      {replies.length > 0 && (
-        <div className="flex items-center gap-2 px-4 py-2 flex-shrink-0">
-          <div className="flex-1 h-px bg-[#383a40]" />
-          <span className="text-xs text-gray-500">{replies.length} {replies.length === 1 ? 'reply' : 'replies'}</span>
-          <div className="flex-1 h-px bg-[#383a40]" />
-        </div>
-      )}
-
-      <div className="flex-1 overflow-y-auto">
-        {replies.map((reply) => (
-          <MessageItem
-            key={reply.id}
-            message={reply}
-            channelId={activeThread.channel_id}
-            isThread
-          />
-        ))}
+      {/* Replies Stream */}
+      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+        {replies.length === 0 ? (
+          <div className="p-6 text-center text-xs text-ink-muted">
+            No replies yet. Start the thread below.
+          </div>
+        ) : (
+          replies.map((reply) => (
+            <MessageItem
+              key={reply.id}
+              message={reply}
+              channelId={activeThread.channel_id}
+              isThread
+            />
+          ))
+        )}
       </div>
 
-      <MessageInput
-        channelId={activeThread.channel_id}
-        parentId={activeThread.id}
-        placeholder="Reply to thread..."
-      />
-    </div>
+      {/* Reply Input */}
+      <div className="p-3 border-t border-border-subtle bg-surface">
+        <MessageInput
+          channelId={activeThread.channel_id}
+          parentId={activeThread.id}
+          placeholder="Reply in thread..."
+        />
+      </div>
+    </aside>
   );
 };
 

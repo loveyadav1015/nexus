@@ -19,7 +19,6 @@ const MessageInput = ({ channelId, channelName, parentId = null, placeholder: cu
     continuous: true,
     interimResults: true,
     onTranscript: (spokenText) => {
-      // Append or insert transcript after the base content that existed before dictation started
       const base = baseContentRef.current;
       const separator = base && !base.endsWith(' ') ? ' ' : '';
       setContent(base ? `${base}${separator}${spokenText}` : spokenText);
@@ -90,28 +89,31 @@ const MessageInput = ({ channelId, channelName, parentId = null, placeholder: cu
     setShowEmojiPicker(false);
   };
 
+  const isDarkMode = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+
   return (
-    <div className="px-4 pb-4 pt-0 relative">
-      <div className="border border-[#383a40] rounded-lg bg-[#2c2d30] overflow-hidden">
+    <div className="px-4 pb-4 pt-1 relative">
+      <div className="border border-border-strong rounded-xl bg-surface focus-within:border-accent focus-within:ring-1 focus-within:ring-accent transition-all shadow-xs overflow-hidden">
         <textarea
           value={content}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={placeholderText}
           rows={1}
-          className="w-full bg-transparent px-4 pt-3 pb-2 text-sm text-[#d1d2d3] placeholder-gray-500 resize-none outline-none min-h-[44px] max-h-[200px]"
-          style={{ overflow: content.split('\n').length > 6 ? 'auto' : 'hidden' }}
+          className="w-full bg-transparent px-4 pt-3 pb-2 text-sm text-ink-primary placeholder:text-ink-faint resize-none outline-none min-h-[44px] max-h-[180px]"
+          style={{ overflow: content.split('\n').length > 5 ? 'auto' : 'hidden' }}
         />
-        <div className="border-t border-[#383a40]/50 px-2 py-1.5 flex items-center justify-between">
+        <div className="border-t border-border-subtle px-2.5 py-1.5 flex items-center justify-between bg-surface/50">
           <button
             type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className="text-gray-400 hover:text-gray-200 p-1 rounded hover:bg-[#383a40] transition-colors"
-            aria-label="Emoji picker"
+            className="text-ink-muted hover:text-ink-primary p-1 rounded-md hover:bg-surface-hover transition-colors"
+            aria-label="Add emoji"
+            title="Add emoji"
           >
-            <Smile size={18} />
+            <Smile size={16} />
           </button>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <MicButton
               supported={supported}
               listening={listening}
@@ -122,22 +124,23 @@ const MessageInput = ({ channelId, channelName, parentId = null, placeholder: cu
               type="button"
               onClick={handleSend}
               disabled={!content.trim()}
-              className="bg-[#4a55c8] hover:bg-[#5561d4] text-white rounded p-1.5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="bg-accent hover:bg-accent-hover text-white rounded-md p-1.5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs"
               aria-label="Send message"
+              title="Send message (Enter)"
             >
-              <Send size={16} />
+              <Send size={14} />
             </button>
           </div>
         </div>
       </div>
 
       {showEmojiPicker && (
-        <div className="absolute bottom-full left-4 mb-2 z-20">
+        <div className="absolute bottom-full left-4 mb-2 z-20 shadow-xl border border-border-strong rounded-lg overflow-hidden">
           <EmojiPicker
             onEmojiClick={handleEmojiSelect}
-            theme="dark"
-            width={300}
-            height={350}
+            theme={isDarkMode ? 'dark' : 'light'}
+            width={320}
+            height={360}
           />
         </div>
       )}

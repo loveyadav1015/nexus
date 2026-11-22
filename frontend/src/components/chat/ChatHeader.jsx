@@ -1,55 +1,55 @@
 import { useState } from 'react';
-import { Search, Phone, Info, Settings } from 'lucide-react';
+import { Search, Hash, Menu } from 'lucide-react';
 import SearchBar from '../ui/SearchBar';
 
-const ChatHeader = ({ channel }) => {
+const ChatHeader = ({ channel, onToggleSidebar }) => {
   const [showSearch, setShowSearch] = useState(false);
 
   if (!channel) return null;
 
   return (
-    <div className="h-14 border-b border-[#383a40] flex items-center px-4 gap-3 bg-[#1d1c1d] relative flex-shrink-0">
+    <header className="h-header border-b border-border-subtle flex items-center px-4 sm:px-5 gap-2.5 sm:gap-3 bg-canvas/80 backdrop-blur-xs relative flex-shrink-0 z-10">
+      {onToggleSidebar && (
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          className="md:hidden p-1.5 -ml-1 rounded-md text-ink-secondary hover:text-ink-primary hover:bg-surface-hover transition-colors flex-shrink-0"
+          aria-label="Toggle channels sidebar"
+          title="Toggle channels sidebar"
+        >
+          <Menu size={16} />
+        </button>
+      )}
+
       <div className="flex items-center gap-2 flex-1 min-w-0">
-        <span className="text-gray-400">#</span>
-        <span className="font-semibold text-white text-base">{channel.name}</span>
+        <Hash size={15} className="text-ink-faint flex-shrink-0" />
+        <span className="font-semibold text-ink-primary text-sm tracking-tight truncate">
+          {channel.name}
+        </span>
         {channel.description && (
           <>
-            <div className="w-px h-5 bg-[#383a40] mx-2 flex-shrink-0" />
-            <span className="text-sm text-gray-400 truncate max-w-xs">{channel.description}</span>
+            <div className="hidden sm:block w-px h-3.5 bg-border-strong mx-1.5 flex-shrink-0" />
+            <span className="hidden sm:inline text-xs text-ink-muted truncate max-w-sm">
+              {channel.description}
+            </span>
           </>
         )}
       </div>
 
       <div className="flex items-center gap-1">
         <button
-          className="p-1.5 rounded text-gray-400 hover:text-white hover:bg-[#27292d] cursor-pointer transition-colors"
-          aria-label="Call"
-        >
-          <Phone size={16} />
-        </button>
-        <button
+          type="button"
           onClick={() => setShowSearch(!showSearch)}
-          className="p-1.5 rounded text-gray-400 hover:text-white hover:bg-[#27292d] cursor-pointer transition-colors"
-          aria-label="Search"
+          className="p-1.5 rounded-md text-ink-muted hover:text-ink-primary hover:bg-surface-hover transition-colors"
+          aria-label="Search messages"
+          title="Search messages"
         >
-          <Search size={16} />
-        </button>
-        <button
-          className="p-1.5 rounded text-gray-400 hover:text-white hover:bg-[#27292d] cursor-pointer transition-colors"
-          aria-label="Channel info"
-        >
-          <Info size={16} />
-        </button>
-        <button
-          className="p-1.5 rounded text-gray-400 hover:text-white hover:bg-[#27292d] cursor-pointer transition-colors"
-          aria-label="Settings"
-        >
-          <Settings size={16} />
+          <Search size={15} />
         </button>
       </div>
 
       {showSearch && <SearchBar onClose={() => setShowSearch(false)} />}
-    </div>
+    </header>
   );
 };
 
