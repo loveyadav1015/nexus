@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import useChannelStore from '../store/channelStore';
@@ -22,6 +22,15 @@ const Workspace = () => {
   const setUsers = useUserStore((s) => s.setUsers);
   const activeConversation = useDMStore((s) => s.activeConversation);
   const { typingUsers } = useSocket();
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [prevTarget, setPrevTarget] = useState(`${activeChannelId}-${activeConversation?.id}`);
+  const currentTarget = `${activeChannelId}-${activeConversation?.id}`;
+
+  if (prevTarget !== currentTarget) {
+    setPrevTarget(currentTarget);
+    setMobileSidebarOpen(false);
+  }
 
   useEffect(() => {
     if (!token) return;
@@ -49,15 +58,43 @@ const Workspace = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      {activeChannelId ? (
-        <ChatArea typingUsers={typingUsers} />
-      ) : activeConversation ? (
-        <DMArea />
-      ) : (
-        <WelcomeScreen />
+    <div className="flex h-screen overflow-hidden bg-canvas relative">
+      {/* Mobile Drawer Backdrop */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 md:hidden backdrop-blur-xs transition-opacity duration-200"
+          onClick={() => setMobileSidebarOpen(false)}
+          aria-hidden="true"
+        />
       )}
+
+      {/* Sidebar Drawer */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 transform md:relative md:translate-x-0 transition-transform duration-200 ease-in-out flex-shrink-0 ${
+          mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
+        <Sidebar onCloseMobile={() => setMobileSidebarOpen(false)} />
+      </div>
+
+      {/* Main Chat / DM / Welcome Area */}
+      <div className="flex-1 flex overflow-hidden min-w-0">
+        {activeChannelId ? (
+          <ChatArea
+            typingUsers={typingUsers}
+            onToggleSidebar={() => setMobileSidebarOpen((prev) => !prev)}
+          />
+        ) : activeConversation ? (
+          <DMArea
+            onToggleSidebar={() => setMobileSidebarOpen((prev) => !prev)}
+          />
+        ) : (
+          <WelcomeScreen
+            onToggleSidebar={() => setMobileSidebarOpen((prev) => !prev)}
+          />
+        )}
+      </div>
+
       <VoiceAssistant />
     </div>
   );

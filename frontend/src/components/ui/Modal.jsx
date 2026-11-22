@@ -16,26 +16,31 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className="bg-[#222529] rounded-xl w-[448px] shadow-2xl border border-[#383a40]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? 'modal-title' : undefined}
+        className="bg-surface border border-border-strong rounded-xl w-full max-w-md shadow-xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="px-6 pt-6 pb-4 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">{title}</h2>
+          <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
+            <h2 id="modal-title" className="text-sm font-semibold text-ink-primary tracking-tight">
+              {title}
+            </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white p-1 rounded hover:bg-[#27292d] transition-colors"
-              aria-label="Close modal"
+              className="text-ink-faint hover:text-ink-primary p-1 rounded-md hover:bg-surface-hover transition-colors"
+              aria-label="Close dialog"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
         )}
-        {children}
+        <div className="p-5">{children}</div>
       </div>
     </div>
   );

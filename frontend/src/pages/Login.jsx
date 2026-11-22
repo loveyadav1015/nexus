@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Radio } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 
 const Login = () => {
@@ -13,14 +13,14 @@ const Login = () => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError('Please fill in all fields.');
+      setError('Please enter both your email address and password.');
       return;
     }
     setError('');
     setLoading(true);
     const result = await loginUser(email, password);
     if (!result.success) {
-      setError(result.error);
+      setError(result.error || 'Invalid email or password. Please try again.');
     }
     setLoading(false);
   };
@@ -30,67 +30,99 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1d21] flex items-center justify-center">
-      <div className="bg-[#222529] rounded-xl p-8 w-[400px] shadow-2xl">
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="bg-[#4a55c8] rounded-full w-10 h-10 flex items-center justify-center">
-            <span className="text-white font-bold text-lg">S</span>
+    <div className="min-h-screen bg-canvas text-ink-primary flex items-center justify-center p-4">
+      <div className="w-full max-w-sm bg-surface border border-border-strong rounded-xl p-8 shadow-sm">
+        {/* Brand identity */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="h-10 w-10 rounded-lg bg-sidebar border border-border-strong text-accent flex items-center justify-center mb-3">
+            <Radio size={20} />
           </div>
-          <span className="text-2xl font-bold text-white">Mini Slack</span>
+          <h1 className="text-xl font-semibold text-ink-primary tracking-tight">Nexus</h1>
+          <p className="text-xs text-ink-muted mt-1 text-center">
+            Sign in to your team workspace
+          </p>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-          <input
-            id="login-email"
-            type="email"
-            placeholder="Enter your email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="w-full bg-[#2c2d30] border border-[#383a40] rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#4a9eed] focus:ring-1 focus:ring-[#4a9eed] transition-colors"
-          />
-        </div>
+        {error && (
+          <div
+            role="alert"
+            className="mb-4 p-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-xs text-danger font-medium"
+          >
+            {error}
+          </div>
+        )}
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
-          <div className="relative">
-            <input
-              id="login-password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="w-full bg-[#2c2d30] border border-[#383a40] rounded-lg px-4 py-2.5 pr-10 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#4a9eed] focus:ring-1 focus:ring-[#4a9eed] transition-colors"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 cursor-pointer"
-              aria-label="Toggle password visibility"
+        <div className="space-y-4">
+          <div>
+            <label
+              htmlFor="login-email"
+              className="block text-xs font-medium text-ink-secondary mb-1.5"
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
+              Email address
+            </label>
+            <input
+              id="login-email"
+              type="email"
+              placeholder="you@domain.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-full bg-input border border-border-strong rounded-lg px-3 py-2 text-sm text-ink-primary placeholder:text-ink-faint focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
+            />
           </div>
-          {error && <p className="text-[#e8502a] text-sm mt-1">{error}</p>}
+
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label
+                htmlFor="login-password"
+                className="block text-xs font-medium text-ink-secondary"
+              >
+                Password
+              </label>
+            </div>
+            <div className="relative">
+              <input
+                id="login-password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full bg-input border border-border-strong rounded-lg px-3 py-2 pr-9 text-sm text-ink-primary placeholder:text-ink-faint focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink-primary transition-colors"
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+              </button>
+            </div>
+          </div>
+
+          <button
+            id="login-button"
+            type="button"
+            onClick={handleLogin}
+            disabled={loading}
+            className="w-full mt-2 bg-accent hover:bg-accent-hover text-white font-medium py-2 rounded-lg text-sm transition-colors disabled:opacity-50 flex items-center justify-center shadow-sm"
+          >
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
         </div>
 
-        <button
-          id="login-button"
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full bg-[#4a55c8] hover:bg-[#5561d4] text-white font-semibold py-2.5 rounded-lg transition-colors active:scale-95 transition-transform duration-75 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Logging in...' : 'Log In'}
-        </button>
-
-        <p className="text-gray-400 text-sm text-center mt-4">
-          Don&apos;t have an account?{' '}
-          <Link to="/register" className="font-bold text-white hover:underline cursor-pointer">
-            Register
-          </Link>
-        </p>
+        <div className="mt-6 pt-4 border-t border-border-subtle text-center">
+          <p className="text-xs text-ink-muted">
+            New here?{' '}
+            <Link
+              to="/register"
+              className="text-accent hover:underline font-medium"
+            >
+              Create an account
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
